@@ -88,7 +88,7 @@ lando env | grep SERVICE | grep web
 lando whoami | grep nginx
 
 # should allow legacy moreHttpPorts to work like it does for v3
-docker inspect l337_web_1 | grep io.lando.http-ports | grep "80,443,8888"
+docker inspect l337-web-1 | grep io.lando.http-ports | grep "80,443,8888"
 
 # should automatically set appMount if appRoot is volume mounted
 lando pwd | grep /site

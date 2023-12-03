@@ -7,7 +7,7 @@ const os = require('os');
 
 // Default config
 const defaultConfig = options => ({
-  orchestratorSeparator: '_',
+  orchestratorSeparator: '-',
   orchestratorVersion: '2.27.0',
   configSources: [],
   disablePlugins: [],
