@@ -18,7 +18,9 @@ module.exports = (config, injected) => {
     // Build run objects
     .map(
       ({command, service}) =>
-        require('./build-tooling-runner')(app, command, service, user, env, dir, appMount, !answers.deps ?? false))
+        require('./build-tooling-runner')(
+          app, command, service, user, env, dir, appMount, !answers.deps ?? false, answers.autoRemove ?? true,
+        ))
     // Try to run the task quickly first and then fallback to compose launch
     .each(runner => require('./build-docker-exec')(injected, stdio, runner).catch(execError => {
       return injected.engine.isRunning(runner.id).then(isRunning => {
