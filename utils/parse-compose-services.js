@@ -2,7 +2,6 @@
 
 // Modules
 const _ = require('lodash');
-const path = require('path');
 
 // adds required methods to ensure the lando v3 debugger can be injected into v4 things
 module.exports = (config, app) => _(config)
