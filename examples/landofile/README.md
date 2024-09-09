@@ -20,17 +20,17 @@ Run the following commands to verify things work as expected
 
 ```bash
 # Should merge in all Landofiles correctly
-docker ps --filter label=com.docker.compose.project=landolandofile | grep landolandofile_log_1
-docker ps --filter label=com.docker.compose.project=landolandofile | grep landolandofile_web_1
-docker ps --filter label=com.docker.compose.project=landolandofile | grep landolandofile_web2_1
-docker ps --filter label=com.docker.compose.project=landolandofile | grep landolandofile_web3_1
+docker ps --filter label=com.docker.compose.project=lando-landofile | grep landolandofile-log-1
+docker ps --filter label=com.docker.compose.project=lando-landofile | grep landolandofile-web-1
+docker ps --filter label=com.docker.compose.project=lando-landofile | grep landolandofile-web2-1
+docker ps --filter label=com.docker.compose.project=lando-landofile | grep landolandofile-web3-1
 
 # Should merge in all Landofiles correctly even if we are down a directory
 cd docker-compose
-docker ps --filter label=com.docker.compose.project=landolandofile | grep landolandofile_log_1
-docker ps --filter label=com.docker.compose.project=landolandofile | grep landolandofile_web_1
-docker ps --filter label=com.docker.compose.project=landolandofile | grep landolandofile_web2_1
-docker ps --filter label=com.docker.compose.project=landolandofile | grep landolandofile_web3_1
+docker ps --filter label=com.docker.compose.project=lando-landofile | grep landolandofile-log-1
+docker ps --filter label=com.docker.compose.project=lando-landofile | grep landolandofile-web-1
+docker ps --filter label=com.docker.compose.project=lando-landofile | grep landolandofile-web2-1
+docker ps --filter label=com.docker.compose.project=lando-landofile | grep landolandofile-web3-1
 cd ..
 ```
 
