@@ -5,7 +5,11 @@ const _ = require('lodash');
 module.exports = async (app, lando) => {
   // add parsed services to app object so we can use them downstream
   app.cachedInfo = _.get(lando.cache.get(app.composeCache), 'info', []);
-  app.parsedServices = require('../utils/parse-v3-services')(_.get(app, 'config.services', {}), app);
+  app.parsedServices = _.merge(
+    {},
+    require('../utils/parse-v3-services')(_.get(app, 'config.services', {}), app),
+    require('../utils/parse-compose-services')(_.get(app, 'composeData.services', {}), app),
+  );
   app.parsedV3Services = _(app.parsedServices).filter(service => service.api === 3).value();
   app.servicesList = app.parsedV3Services.map(service => service.name);
 

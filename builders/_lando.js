@@ -25,7 +25,6 @@ module.exports = {
         confDest = '',
         confSrc = '',
         config = {},
-        data = `data_${name}`,
         dataHome = `home_${name}`,
         entrypoint = '/lando-entrypoint.sh',
         home = '',
@@ -48,6 +47,8 @@ module.exports = {
         supportedIgnore = false,
         root = '',
         webroot = '/app',
+        _app = null,
+        appMount = '/app',
       } = {},
       ...sources
     ) {
@@ -81,6 +82,9 @@ module.exports = {
       const environment = {
         LANDO_SERVICE_NAME: name,
         LANDO_SERVICE_TYPE: type,
+        LANDO_WEBROOT_USER: meUser,
+        LANDO_WEBROOT_GROUP: meUser,
+        LANDO_MOUNT: appMount,
       };
 
       // Handle labels
@@ -115,7 +119,7 @@ module.exports = {
       }
 
       // Add in some more dirz if it makes sense
-      if (home) volumes.push(`${home}:/user:cached`);
+      if (home && _.get(_app, 'config.keys', true)) volumes.push(`${path.join(home, '.ssh')}:/user/.ssh`,);
 
       // Handle cert refresh
       // @TODO: this might only be relevant to the proxy, if so let's move it there
@@ -139,7 +143,6 @@ module.exports = {
 
       // Add named volumes and other thingz into our primary service
       const namedVols = {};
-      _.set(namedVols, data, {});
       _.set(namedVols, dataHome, {});
       sources.push({
         services: _.set({}, name, {
