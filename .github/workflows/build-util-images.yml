@@ -3,9 +3,6 @@ name: Build Utility Images
 on:
   # Uncomment below for testing purposes
   pull_request:
-  push:
-    branches:
-      - main
 
 jobs:
   buildx:
