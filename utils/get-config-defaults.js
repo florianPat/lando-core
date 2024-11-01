@@ -20,7 +20,7 @@ const getBuildEngineVersion = (platform = process.landoPlatform ?? process.platf
 
 // Default config
 const defaultConfig = options => ({
-  orchestratorSeparator: '_',
+  orchestratorSeparator: '-',
   orchestratorVersion: '2.30.3',
   configSources: [],
   coreBase: path.resolve(__dirname, '..'),
