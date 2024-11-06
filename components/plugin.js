@@ -226,7 +226,7 @@ class Plugin {
     // add auxilary package info
     this.spec = `${this.package}@${this.version}`;
     this.scope = require('npm-package-arg')(this.spec).scope;
-    if (this.scope) this.unscoped = this.package.replace(`${this.scope}/`, '');
+    if (this.scope) this.unscoped = this.spec.replace(`${this.scope}/`, '');
 
     // add some computed properties
     // @NOTE: do we need a stronger check for isupdateable?
