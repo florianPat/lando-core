@@ -1,7 +1,7 @@
 {
   "name": "@florianpat/lando-core",
   "description": "The libraries that power all of Lando. Fork by flo for compose integration",
-  "version": "3.23.22",
+  "version": "3.23.22-test1",
   "author": "Florian Patruck @florianPat",
   "license": "GPL-3.0",
   "repository": "florianPat/lando-core",
