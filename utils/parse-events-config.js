@@ -38,6 +38,26 @@ module.exports = (cmds, app, data, lando) => _.map(cmds, cmd => {
   // Discover the service
   const command = getCommand(cmd);
   const service = getService(cmd, data, app._defaultService);
+
+  if ('lando' === service) {
+    const yargs = require('yargs');
+    const argv = yargs(_.isArray(command) ? command.join(' ') : command).parse();
+    const $0 = _.pullAt(argv._, [0])[0];
+    const toolingTask = _.find(app.tasks, task => $0 === task.command);
+    argv._eventArgs = argv._;
+    argv.$0 = undefined;
+    argv._ = undefined;
+    argv._app = app;
+
+    if (undefined === toolingTask) {
+      throw new Error('Could not find tooling command: ' + $0);
+    }
+    return {
+      toolingTask,
+      answers: argv,
+    };
+  }
+
   // compute stdio based on compose major version
   const cstdio = _.get(app, '_config.orchestratorMV', 2) ? 'inherit' : ['inherit', 'pipe', 'pipe'];
 
@@ -67,7 +87,7 @@ module.exports = (cmds, app, data, lando) => _.map(cmds, cmd => {
       {},
         require('./build-init-runner')(_.merge(
         {},
-        require('./get-init-runner-defaults')(lando, {destination: app.root, name: app.project}),
+        require('./get-init-runner-defaults')(lando, {destination: app.root, name: app.project, _app: app}),
         {cmd, workdir: '/app'},
       )),
       {isInitEventCommand: true},

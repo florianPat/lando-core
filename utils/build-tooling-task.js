@@ -36,7 +36,7 @@ module.exports = (config, injected) => {
               {},
               require('./build-init-runner')(_.merge(
                 {},
-                require('./get-init-runner-defaults')(app._lando, {destination: app.root, name: app.project}),
+                require('./get-init-runner-defaults')(app._lando, {destination: app.root, name: app.project, _app: app}),
                 {cmd: command, workdir: '/app', env},
               )),
             );
