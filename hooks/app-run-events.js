@@ -3,6 +3,7 @@
 const _ = require('lodash');
 const remove = require('../utils/remove');
 const path = require('path');
+const formatters = require('../lib/formatters');
 
 module.exports = async (app, lando, cmds, data, event) => {
   const eventCommands = require('./../utils/parse-events-config')(cmds, app, data, lando);
@@ -17,10 +18,13 @@ module.exports = async (app, lando, cmds, data, event) => {
     );
     eventCommands.splice(0, _.last(splitEventCommands).length);
   }
+
   return lando.Promise.mapSeries(splitEventCommands, eventCommands => {
     return lando.Promise.mapSeries(eventCommands, eventCommand => {
       if (undefined !== eventCommand.toolingTask) {
-        return eventCommand.toolingTask.run(eventCommand.answers);
+        const inquiry = formatters.getInteractive(eventCommand.toolingTask.options, eventCommand.answers);
+        return formatters.handleInteractive(inquiry, eventCommand.answers, eventCommand.toolingTask.command, lando)
+          .then(answers => eventCommand.toolingTask.run(_.merge(eventCommand.answers, answers)));
       } else {
         return injectable.engine.run(eventCommands);
       }
