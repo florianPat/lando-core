@@ -47,6 +47,7 @@ module.exports = (cmds, app, data, lando) => _.map(cmds, cmd => {
     argv._eventArgs = argv._;
     argv.$0 = undefined;
     argv._ = undefined;
+    argv._app = app;
 
     if (undefined === toolingTask) {
       throw new Error('Could not find tooling command: ' + $0);
@@ -86,7 +87,7 @@ module.exports = (cmds, app, data, lando) => _.map(cmds, cmd => {
       {},
         require('./build-init-runner')(_.merge(
         {},
-        require('./get-init-runner-defaults')(lando, {destination: app.root, name: app.project}),
+        require('./get-init-runner-defaults')(lando, {destination: app.root, name: app.project, _app: app}),
         {cmd, workdir: '/app'},
       )),
       {isInitEventCommand: true},
