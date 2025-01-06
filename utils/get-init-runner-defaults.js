@@ -18,7 +18,7 @@ module.exports = (lando, options) => {
   const initDir = path.join(lando.config.userConfRoot, 'init', options.name);
   const initFiles = require('./dump-compose-data')(initData, initDir);
   // Start to build out some propz and shiz
-  const project = `${lando.config.product}init` + require('./docker-composify')(options.name);
+  const project = `${lando.config.product}init` + options.name;
   const separator = lando.config.orchestratorSeparator;
   // Return
   return {
