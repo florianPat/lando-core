@@ -49,6 +49,8 @@ module.exports = {
         supportedIgnore = false,
         root = '',
         webroot = '/app',
+        _app = null,
+        appMount = '/app',
       } = {},
       ...sources
     ) {
@@ -91,6 +93,10 @@ module.exports = {
       const environment = {
         LANDO_SERVICE_NAME: name,
         LANDO_SERVICE_TYPE: type,
+        LANDO_WEBROOT_USER: meUser,
+        LANDO_WEBROOT_GROUP: meUser,
+        LANDO_MOUNT: appMount,
+        LANDO_SERVICE_API: 3,
       };
 
       // Handle labels
@@ -106,7 +112,6 @@ module.exports = {
         `${userConfRoot}:/lando:cached`,
         `${globalScriptsDir}:/helpers`,
         `${entrypointScript}:/lando-entrypoint.sh`,
-        `${dataHome}:/var/www`,
       ];
 
       // add in service helpers if we have them
@@ -128,7 +133,8 @@ module.exports = {
       }
 
       // Add in some more dirz if it makes sense
-      if (home) volumes.push(`${home}:/user:cached`);
+      if (home && _.get(_app, '_config.homeMount', true)) volumes.push(`${home}:/user:cached`);
+      else if (home && _.get(_app, 'config.keys', true)) volumes.push(`${path.join(home, '.ssh')}:/user/.ssh:cached`);
 
       // Handle cert refresh
       // @TODO: this might only be relevant to the proxy, if so let's move it there
@@ -152,9 +158,16 @@ module.exports = {
 
       // Add named volumes and other thingz into our primary service
       const namedVols = {};
-      _.set(namedVols, data, {});
-      _.set(namedVols, dataHome, {});
-
+      if (null !== data) {
+        _.set(namedVols, data, {});
+      }
+      if (null !== dataHome) {
+        _.set(namedVols, dataHome, {});
+        volumes.push(`${dataHome}:/var/www`);
+      }
+      if (null === entrypoint) {
+        entrypoint = undefined;
+      }
       sources.push({
         services: _.set({}, name, {
           entrypoint,
@@ -184,6 +197,7 @@ module.exports = {
       info.meUser = meUser;
       info.hasCerts = ssl;
       info.api = 3;
+      info.appMount = appMount;
 
       // Add the healthcheck if it exists
       if (healthcheck) info.healthcheck = healthcheck;
