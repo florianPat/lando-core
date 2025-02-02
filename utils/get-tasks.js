@@ -42,7 +42,7 @@ const appRunner = command => (argv, lando) => {
   const app = lando.getApp(argv._app.root);
   return lando.events.emit('pre-app-runner', app)
   .then(() => lando.events.emit('pre-command-runner', app))
-  .then(() => app.init().then(() => _.find(app.tasks, {command}).run(argv)));
+  .then(() => app.init({noEngine: true}).then(() => _.find(app.tasks, {command}).run(argv)));
 };
 
 /*

@@ -23,7 +23,7 @@ module.exports = (config, injected) => {
   const run = answers => {
     let initToolingRunner = null;
 
-    return injected.Promise.try(() => (_.isEmpty(app.compose)) ? app.init() : true)
+    return injected.Promise.try(() => ('_init' !== service) ? app.init() : true)
       // Kick off the pre event wrappers
       .then(() => app.events.emit(`pre-${eventName}`, config, answers))
       // Get an interable of our commandz

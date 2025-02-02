@@ -29,5 +29,5 @@ module.exports = async (files, dir, landoComposeConfigDir = undefined, outputCon
   fs.unlinkSync(outputFile);
   remove(path.dirname(outputFile));
 
-  return result;
+  return [result];
 };
