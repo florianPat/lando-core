@@ -113,6 +113,9 @@ module.exports = async (app, lando) => {
   // Add tooling if applicable
   app.events.on('post-init', async () => await require('./hooks/app-add-tooling')(app, lando));
 
+  // Add _init tooling for bootstrap reference
+  app.events.on('pre-bootstrap', async () => await require('./hooks/app-add-init-tooling')(app, lando));
+
   // Collect info so we can inject LANDO_INFO
   // @NOTE: this is not currently the full lando info because a lot of it requires the app to be on
   app.events.on('post-init', 10, async () => await require('./hooks/app-set-lando-info')(app, lando));
