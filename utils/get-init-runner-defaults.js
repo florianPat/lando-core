@@ -10,6 +10,7 @@ module.exports = (lando, options) => {
     lando.config.userConfRoot,
     lando.config.home,
     options.destination,
+    _.get(options, '_app', {}),
     _.cloneDeep(lando.config.appEnv),
     _.cloneDeep(lando.config.appLabels),
     _.get(options, 'initImage', 'devwithlando/util:4'),
@@ -17,7 +18,7 @@ module.exports = (lando, options) => {
   const initDir = path.join(lando.config.userConfRoot, 'init', options.name);
   const initFiles = require('./dump-compose-data')(initData, initDir);
   // Start to build out some propz and shiz
-  const project = `${lando.config.product}init` + require('./docker-composify')(options.name);
+  const project = `${lando.config.product}init` + options.name;
   const separator = lando.config.orchestratorSeparator;
   // Return
   return {
@@ -26,5 +27,8 @@ module.exports = (lando, options) => {
     user: 'www-data',
     compose: initFiles,
     remove: false,
+    workdir: '/',
+    prestart: true,
+    env: {},
   };
 };
