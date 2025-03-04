@@ -1,8 +1,6 @@
 'use strict';
 
 // Modules
-const fs = require('fs');
-const path = require('path');
 const _ = require('lodash');
 
 const {color} = require('listr2');
@@ -14,7 +12,7 @@ module.exports = (lando, config = lando.appConfig) => ({
   describe: 'Runs command(s) on a service',
   usage: '$0 exec <service> [--user <user>] -- <command>',
   override: true,
-  level: 'engine',
+  level: 'app',
   examples: [
     '$0 exec appserver -- lash bash',
     '$0 exec nginx --user root -- whoami',
@@ -25,7 +23,6 @@ module.exports = (lando, config = lando.appConfig) => ({
     service: {
       describe: 'Runs on this service',
       type: 'string',
-      choices: config?.allServices ?? [],
     },
   },
   options: {
@@ -35,31 +32,11 @@ module.exports = (lando, config = lando.appConfig) => ({
     },
   },
   run: async options => {
-    // construct a minapp from various places
-    const minapp = !_.isEmpty(config) ? config : lando.appConfig;
-
-    // if no app then we need to throw
-    if (!fs.existsSync(minapp.composeCache)) {
-      throw new Error('Could not detect a built app. Rebuild or move into the correct location!');
-    }
-
-    // Build a minimal app
-    const AsyncEvents = require('../lib/events');
-    const app = lando.cache.get(path.basename(minapp.composeCache));
-
-    // augment
-    app.config = minapp;
-    app.events = new AsyncEvents(lando.log);
-
-    // Load only what we need so we don't pay the appinit penalty
-    if (!_.isEmpty(_.get(app, 'config.events', []))) {
-      _.forEach(app.config.events, (cmds, name) => {
-        app.events.on(name, 9999, async data => await require('../hooks/app-run-events')(app, lando, cmds, data));
-      });
-    }
+    const app = lando.getApp(options._app.root);
+    await app.init();
 
     // nice things
-    const aservices = app?.config?.allServices ?? app?.allServices ?? [];
+    const aservices = app.allServices;
     const choices = `[${color.green('choices:')} ${aservices.map(service => `"${service}"`).join(', ')}]`;
 
     // gather our options
@@ -127,8 +104,8 @@ module.exports = (lando, config = lando.appConfig) => ({
     ropts.push(sconf?.overrides?.working_dir ?? sconf?.working_dir);
     // mix in mount if applicable
     ropts.push(app?.mounts[options.service]);
-    ropts.push(!options.deps ?? true);
-    ropts.push(options.autoRemove ?? false);
+    ropts.push(!options.deps ?? false);
+    ropts.push(options.autoRemove ?? true);
 
     // emit pre-exec
     await app.events.emit('pre-exec', config);
