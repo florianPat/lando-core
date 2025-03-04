@@ -131,7 +131,7 @@ module.exports = async (app, lando) => {
   app.events.on('ready', 1, async () => await require('./hooks/app-override-tooling-defaults')(app, lando));
 
   // set tooling compose cache
-  app.events.on('ready', async () => await require('./hooks/app-set-compose-cache')(app, lando));
+  app.events.on('ready-engine', async () => await require('./hooks/app-set-compose-cache')(app, lando));
 
   // v4 parts of the app are ready
   app.events.on('ready', 6, async () => await require('./hooks/app-v4-ready')(app, lando));
