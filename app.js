@@ -144,7 +144,7 @@ module.exports = async (app, lando) => {
 
   // Save a compose cache every time the app is ready, we have to duplicate this for v4 because we modify the
   // composeData after the v3 app.ready event
-  app.events.on('ready-v4', async () => await require('./hooks/app-set-v4-compose-cache')(app, lando));
+  app.events.on('ready-engine', async () => await require('./hooks/app-set-v4-compose-cache')(app, lando));
 
   // Otherwise set on rebuilds
   // NOTE: We set this pre-rebuild because post-rebuild runs after post-start because you would need to

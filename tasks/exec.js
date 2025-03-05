@@ -4,6 +4,8 @@
 const _ = require('lodash');
 
 const {color} = require('listr2');
+const fs = require('fs');
+const path = require('path');
 
 // @TODO: when we have a file for recipes/compose we can set choices on service
 
@@ -23,6 +25,7 @@ module.exports = (lando, config = lando.appConfig) => ({
     service: {
       describe: 'Runs on this service',
       type: 'string',
+      choices: config?.allServices ?? [],
     },
   },
   options: {
@@ -32,8 +35,29 @@ module.exports = (lando, config = lando.appConfig) => ({
     },
   },
   run: async options => {
-    const app = lando.getApp(options._app.root);
-    await app.init();
+    // construct a minapp from various places
+    const minapp = !_.isEmpty(config) ? config : lando.appConfig;
+
+    // if no app then we need to throw
+    if (!fs.existsSync(minapp.composeCache)) {
+      const app = lando.getApp(options._app.root);
+      await app.init();
+    }
+
+    // Build a minimal app
+    const AsyncEvents = require('../lib/events');
+    const app = lando.cache.get(path.basename(minapp.composeCache));
+
+    // augment
+    app.config = minapp;
+    app.events = new AsyncEvents(lando.log);
+
+    // Load only what we need so we don't pay the appinit penalty
+    if (!_.isEmpty(_.get(app, 'config.events', []))) {
+      _.forEach(app.config.events, (cmds, name) => {
+        app.events.on(name, 9999, async data => await require('../hooks/app-run-events')(app, lando, cmds, data));
+      });
+    }
 
     // nice things
     const aservices = app.allServices;
