@@ -113,6 +113,9 @@ module.exports = async (app, lando) => {
   // Add tooling if applicable
   app.events.on('post-init', async () => await require('./hooks/app-add-tooling')(app, lando));
 
+  // Add _init tooling for bootstrap reference
+  app.events.on('pre-bootstrap', async () => await require('./hooks/app-add-init-tooling')(app, lando));
+
   // Collect info so we can inject LANDO_INFO
   // @NOTE: this is not currently the full lando info because a lot of it requires the app to be on
   app.events.on('post-init', 10, async () => await require('./hooks/app-set-lando-info')(app, lando));
@@ -128,7 +131,7 @@ module.exports = async (app, lando) => {
   app.events.on('ready', 1, async () => await require('./hooks/app-override-tooling-defaults')(app, lando));
 
   // set tooling compose cache
-  app.events.on('ready', async () => await require('./hooks/app-set-compose-cache')(app, lando));
+  app.events.on('ready-engine', async () => await require('./hooks/app-set-compose-cache')(app, lando));
 
   // v4 parts of the app are ready
   app.events.on('ready', 6, async () => await require('./hooks/app-v4-ready')(app, lando));
@@ -141,7 +144,7 @@ module.exports = async (app, lando) => {
 
   // Save a compose cache every time the app is ready, we have to duplicate this for v4 because we modify the
   // composeData after the v3 app.ready event
-  app.events.on('ready-v4', async () => await require('./hooks/app-set-v4-compose-cache')(app, lando));
+  app.events.on('ready-engine', async () => await require('./hooks/app-set-v4-compose-cache')(app, lando));
 
   // Otherwise set on rebuilds
   // NOTE: We set this pre-rebuild because post-rebuild runs after post-start because you would need to

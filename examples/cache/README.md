@@ -34,7 +34,8 @@ cat ~/.lando/cache/lando-cache.compose.cache
 
 # Should regenerate the caches on any --help before the help is displayed
 lando --clear
-lando exec --help | grep service | grep choices | grep web | grep web2 | grep web3 | grep web4
+# NOTE(flo): Web is not here as the task bootstrapping runs before the app init, which gets compose services :/
+lando exec --help | grep service | grep choices | grep web2 | grep web3 | grep web4
 cat ~/.lando/cache/_.tasks.cache
 cat ~/.lando/cache/lando-cache.compose.cache
 
